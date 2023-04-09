@@ -1,5 +1,6 @@
 package com.example.memeshareappkt
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +20,7 @@ import com.example.memeshareappkt.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    var currentImageUrl: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,url,null,
             { response ->
                 val url = response.getString("url")
+                currentImageUrl = url
                 Glide.with(this).load(url).listener(object: RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -70,7 +73,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun shareMeme(view: View) {
-        Log.d("share","Share pressed")
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "plain/text"
+        intent.putExtra(Intent.EXTRA_TEXT, "Hey checkout this cool meme $currentImageUrl")
+        val chooser = Intent.createChooser(intent,"Share the meme using")
+        startActivity(chooser)
     }
 
     fun nextMeme(view: View) {
